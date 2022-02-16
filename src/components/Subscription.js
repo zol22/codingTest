@@ -7,7 +7,8 @@ import { useNavigate } from 'react-router';
 function Subscription() {
 
     const [datas, setDatas] = useState(null);
-    const [code, setCode ] = useState('');  
+    const [planSelected, setPlanSelected ] = useState(null)
+    const [code, setCode ] = useState(''); 
     const [isCode, setIsCode ] = useState('');  
     const [errorCode, setErrorCode] = useState('');
     const history = useNavigate();
@@ -33,6 +34,13 @@ function Subscription() {
            }
           
        }).catch(err => err.message)
+   }
+   const choose =  (name, price) => {
+       setPlanSelected({
+           name,
+           price
+       })
+       console.log(planSelected)
    }
 
   return (
@@ -60,12 +68,13 @@ function Subscription() {
 
                     </CardContent>
                     <CardActions style={{justifyContent:'center', margin:'10%'}}>
-                        <Button sx={{padding:0.7}} variant="outlined" size="small">Choose</Button>
+                        <Button sx={{padding:0.7}} variant="outlined" size="small" onClick={() => choose(data.name,data.price)}>Choose</Button>
                     </CardActions>
                 </Card>
             </Grid>
         ) )} 
         </Grid>
+        {planSelected ? (<h3>You Selected <span style={{textDecoration:'underline'}}>'{planSelected.name}</span>. The Price is ${planSelected.price}</h3>) : null }
 
         <Box 
             component="form"
@@ -75,7 +84,7 @@ function Subscription() {
             utoComplete="off"
             >
             <div>
-                <p>Do you have a discount code?</p>
+                <p style={{paddingTop:70}}>Do you have a discount code?</p>
                 <TextField
                     required
                     id="outlined-required"
@@ -85,7 +94,7 @@ function Subscription() {
                     />
                      <Button sx={{margin:4}} variant="outlined" onClick={discount} size="small">Enter discount</Button>
             </div>
-            {isCode ? 'You have 10% discount' : errorCode}
+            {isCode ? `You have 10% discount.` : errorCode}
   
             
         </Box>
