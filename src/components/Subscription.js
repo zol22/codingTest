@@ -1,14 +1,15 @@
 import React, {useEffect, useState} from 'react'
 import Card from '@mui/material/Card';
-import {CardActions,CardContent,CardHeader,Button, Grid, Typography} from '@mui/material';
+import {CardActions,CardContent,CardHeader,Button, Grid, Typography,Box,TextField} from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router';
-import CheckIcon from '@mui/icons-material/Check';
 
 function Subscription() {
 
     const [datas, setDatas] = useState(null);
-    
+    const [code, setCode ] = useState('');  
+    const [isCode, setIsCode ] = useState('');  
+    const [errorCode, setErrorCode] = useState('');
     const history = useNavigate();
 
 
@@ -17,9 +18,22 @@ function Subscription() {
       .then(results => {
          const dataResults = results.data;
          setDatas(dataResults)
-      })
+      }).catch(err => err.message)
     }, [])
-   
+
+   const discount = () => {
+       axios.post('https://api-test.legendaryapplications.com/action/promos/check',{
+           code: code,
+       }).then(res=> {
+           if (res.data.success){
+                setIsCode(true);
+           } else{
+               setIsCode(false)
+               setErrorCode('Code not valid')
+           }
+          
+       }).catch(err => err.message)
+   }
 
   return (
       <div style={{textAlign:'center'}}>
@@ -52,6 +66,30 @@ function Subscription() {
             </Grid>
         ) )} 
         </Grid>
+
+        <Box 
+            component="form"
+            sx={{
+            '& .MuiTextField-root': { m: 1, width: '25ch' },
+            }} 
+            utoComplete="off"
+            >
+            <div>
+                <p>Do you have a discount code?</p>
+                <TextField
+                    required
+                    id="outlined-required"
+                    label="Enter Code"
+                    value={code}
+                    onChange={(e)=>setCode(e.target.value)}
+                    />
+                     <Button sx={{margin:4}} variant="outlined" onClick={discount} size="small">Enter discount</Button>
+            </div>
+            {isCode ? 'You have 10% discount' : errorCode}
+  
+            
+        </Box>
+       
         <Button sx={{margin:4}}variant="outlined" color="error" onClick={()=> history('/')}> Cancel</Button>
     </div>
   )
